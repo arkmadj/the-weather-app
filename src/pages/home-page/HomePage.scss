@@ -1,0 +1,40 @@
+.header {
+	display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+	&__links {
+		list-style: none;
+		display: flex;
+		gap: 12px;
+	}
+
+	&__link-item {
+		font-family: "Roboto" sans-serif;
+	}
+
+  &__right{
+    display: flex;
+    gap: 24px;
+  }
+
+	&__switch {
+		display: flex;
+    gap: 12px;
+    align-items: center;
+	}
+
+  &__switch-item {
+    background: red;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+  }
+
+  &__image {
+    background: blue;
+    border-radius: 12px;
+    width: 40px;
+    aspect-ratio: 1/1;
+  }
+}
