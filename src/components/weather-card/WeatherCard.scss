@@ -1,0 +1,40 @@
+.card {
+  height: 150px;
+  width: 120px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px;
+  border-radius: 12px;
+  justify-content: space-between;
+
+  &__image-container {
+    height: 50px;
+    width: 50px;
+    display: grid;
+    place-items: center;
+  }
+
+  &__image {
+    background: red;
+    height: 100%;
+    width: 100%;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+  }
+  
+  &__footer{
+    display: flex;
+    gap: 4px;
+  }
+
+  &__high-temp{
+
+  }
+
+  &__low-temp{
+    color: #c1c1c1;
+  }
+}
