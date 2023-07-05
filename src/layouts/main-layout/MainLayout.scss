@@ -1,0 +1,20 @@
+.main-container {
+	background: #f7f6f9;
+  height: 100vh;
+  display: flex;
+}
+
+.side-bar{
+  background: #fff;
+  height: 100vh;
+  width: 400px;
+}
+
+.main-content {
+  flex-grow: 1;
+  padding: 50px;
+
+  &__header{
+    background: red;
+  }
+}
