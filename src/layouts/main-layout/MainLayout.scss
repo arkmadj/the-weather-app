@@ -1,20 +1,43 @@
 .main-container {
 	background: #f7f6f9;
-  height: 100vh;
-  display: flex;
+	// height: 100vh;
+	display: flex;
+	flex-direction: column;
 }
 
-.side-bar{
-  background: #fff;
-  height: 100vh;
-  width: 400px;
+.side-bar {
+	background: #fff;
+	height: 100vh;
+	padding: 32px;
 }
 
 .main-content {
-  flex-grow: 1;
-  padding: 50px;
+	padding: 32px;
+	padding-top: 60px;
+	// width: 100vh;
+	overflow-y: scroll;
+}
 
-  &__header{
-    background: red;
-  }
+@media only screen and (min-width: 992px) {
+	.main-container {
+		height: 100vh;
+    flex-direction: row;
+	}
+
+	.side-bar {
+		width: 400px;
+		padding: 50px;
+	}
+
+	.main-content {
+		flex-grow: 1;
+		padding: 50px;
+		padding-top: 50px;
+		overflow-y: scroll;
+	}
+
+	.side-bar {
+		width: 400px;
+		padding: 50px;
+	}
 }
