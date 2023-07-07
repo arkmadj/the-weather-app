@@ -45,16 +45,7 @@
 		place-items: center;
 		border: none;
 		cursor: pointer;
-
-		&:first-child {
-			background: #191919;
-			color: #fff;
-		}
-
-		&:nth-child(2) {
-			color: #191919;
-			background: #fff;
-		}
+		transition: background 0.4s ease-in-out;
 	}
 
 	&__image {

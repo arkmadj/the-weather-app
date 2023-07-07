@@ -3,12 +3,31 @@
     <div class="header__links" v-if="!isEmpty">
       <span class="header__link-item" @click="showHistory">Last 5 days</span>
       <span class="header__link-item" @click="showForecast">Next 7 days</span>
-      <span class="header__slider" :style="`transform: translateX(${sliderPosition}px)`"></span>
+      <span
+        class="header__slider"
+        :style="`transform: translateX(${sliderPosition}px)`"
+      ></span>
     </div>
-    <div class="header__right">
+    <div class="header__right" v-if="false">
       <div class="header__switch" v-if="!isEmpty">
-        <button class="header__switch-item">ºC</button>
-        <button class="header__switch-item">ºF</button>
+        <button
+          class="header__switch-item"
+          :style="`background: ${
+            activeTempUnit === 'celsius' ? '#191919' : '#fff'
+          }; color: ${activeTempUnit === 'celsius' ? '#fff' : '#191919'}`"
+          @click="changeTempUnit('celsius')"
+        >
+          ºC
+        </button>
+        <button
+          class="header__switch-item"
+          :style="`background: ${
+            activeTempUnit === 'fahrenheit' ? '#191919' : '#fff'
+          }; color: ${activeTempUnit === 'fahrenheit' ? '#fff' : '#191919'}`"
+          @click="changeTempUnit('fahrenheit')"
+        >
+          ºF
+        </button>
       </div>
       <div class="header__image"></div>
     </div>
@@ -16,28 +35,63 @@
   <div v-if="!isEmpty">
     <div v-if="!loadingWeatherForecast">
       <section class="weather-list" v-if="dataIsForecast">
-        <WeatherCard v-for="(day, index) in days" :key="index" :day="day.day" :type="day.type" :high-temp="day.highTemp"
-          :low-temp="day.lowTemp" />
+        <WeatherCard
+          v-for="(day, index) in days"
+          :key="index"
+          :day="day.day"
+          :type="day.type"
+          :high-temp="day.highTemp"
+          :low-temp="day.lowTemp"
+        />
       </section>
       <section class="weather-list" v-else>
-        <WeatherCard v-for="(day, index) in history" :key="index" :day="day.day" :type="day.type" :temp="day.temp"
-          :isHistory="true" />
+        <WeatherCard
+          v-for="(day, index) in history"
+          :key="index"
+          :day="day.day"
+          :type="day.type"
+          :temp="day.temp"
+          :isHistory="true"
+        />
       </section>
     </div>
     <div v-else></div>
     <section class="highlights" v-if="showHighlights">
       <p class="highlights__title">Today's Highlights</p>
       <div class="highlights__list">
-        <HighlightCard v-for="(highlight, key) in highlights" :key="key" :title="highlight.title">
+        <HighlightCard
+          v-for="(highlight, key) in highlights"
+          :key="key"
+          :title="highlight.title"
+        >
           <template v-slot:value-body>
-            <component :is="highlight.body" v-if="highlight.type === 'sun'" :sunriseTime="highlight.sunriseTime"
-              :sunsetTime="highlight.sunsetTime" />
-            <component :is="highlight.body" v-else-if="highlight.type === 'wind'" :speed="highlight.speed"
-              :degree="highlight.degree" />
-            <component :is="highlight.body" v-else-if="highlight.type === 'gauge'" :value="highlight.value"
-              :showBar="highlight.showBar" :unit="highlight.unit" :superUnit="highlight.superUnit" />
-            <component :is="highlight.body" v-else :value="highlight.value" :showBar="highlight.showBar"
-              :unit="highlight.unit" />
+            <component
+              :is="highlight.body"
+              v-if="highlight.type === 'sun'"
+              :sunriseTime="highlight.sunriseTime"
+              :sunsetTime="highlight.sunsetTime"
+            />
+            <component
+              :is="highlight.body"
+              v-else-if="highlight.type === 'wind'"
+              :speed="highlight.speed"
+              :degree="highlight.degree"
+            />
+            <component
+              :is="highlight.body"
+              v-else-if="highlight.type === 'gauge'"
+              :value="highlight.value"
+              :showBar="highlight.showBar"
+              :unit="highlight.unit"
+              :superUnit="highlight.superUnit"
+            />
+            <component
+              :is="highlight.body"
+              v-else
+              :value="highlight.value"
+              :showBar="highlight.showBar"
+              :unit="highlight.unit"
+            />
           </template>
         </HighlightCard>
       </div>
@@ -60,7 +114,7 @@ import { getDay, getTime } from "@/helpers/formatTime";
 import DialGauge from "../../components/dial-gauge/DialGauge.vue";
 import EmptyState from "../../components/empty-state/EmptyState.vue";
 
-const { bus } = useEventBus();
+const { bus, emit } = useEventBus();
 
 const loadingWeatherForecast = ref(false);
 const weatherForcastResponse = ref();
@@ -76,7 +130,9 @@ const weatherHistoryData = ref([]);
 
 const dataIsForecast = ref(true);
 
-const showHighlights = ref(false)
+const showHighlights = ref(false);
+
+const activeTempUnit = ref("celsius");
 
 watch(
   () => bus.value.get("selectedLocation"),
@@ -84,15 +140,15 @@ watch(
     getWeatherForecast(val[0]);
     getCurrentWeather(val[0]);
     getWeatherHistory(val[0]);
-    showForecast()
-    showHighlights.value = false
+    showForecast();
+    showHighlights.value = false;
   }
 );
 
 watch(
   () => bus.value.get("showHighlights"),
   (val) => {
-    showHighlights.value = val[0]
+    showHighlights.value = val[0];
   }
 );
 
@@ -111,7 +167,7 @@ const getWeatherForecast = async (val) => {
 
 const getWeatherHistory = async (val) => {
   loadingWeatherHistory.value = true;
-  weatherHistoryData.value = []
+  weatherHistoryData.value = [];
   try {
     const currentUTCDate = Math.floor(Date.now() / 1000);
 
@@ -193,14 +249,14 @@ const highlights = computed(() => {
       sunriseTime:
         getTime(
           Number(currentWeatherResponse.value?.data?.current?.sunrise) -
-          Number(currentWeatherResponse.value?.data?.timezone_offset) -
-          3600
+            Number(currentWeatherResponse.value?.data?.timezone_offset) -
+            3600
         ) || "",
       sunsetTime:
         getTime(
           Number(currentWeatherResponse.value?.data?.current?.sunset) -
-          Number(currentWeatherResponse.value?.data?.timezone_offset) -
-          3600
+            Number(currentWeatherResponse.value?.data?.timezone_offset) -
+            3600
         ) || "",
       body: SunTime,
     },
@@ -234,9 +290,16 @@ const highlights = computed(() => {
   ];
 });
 
+const changeTempUnit = (val) => {
+  emit("changeTempUnit", val);
+  activeTempUnit.value = val;
+};
+
 const isEmpty = computed(() => {
   return (
-    Object.keys(highlights.value).length === 0 && history.value.length === 0 && days.value.length === 0
+    Object.keys(highlights.value).length === 0 &&
+    history.value.length === 0 &&
+    days.value.length === 0
   );
 });
 </script>
