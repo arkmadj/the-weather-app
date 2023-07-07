@@ -1,0 +1,42 @@
+.gauge {
+	margin-top: 32px;
+	&__value {
+		display: flex;
+		justify-content: space-between;
+	}
+
+	&__value-container {
+		display: flex;
+		gap: 8px;
+		// align-items: flex-start;
+		margin-bottom: 32px;
+	}
+
+	&__value-text {
+		font-size: 96px;
+		font-weight: bold;
+		line-height: 120px;
+	}
+
+	&__value-unit {
+		font-size: 24px;
+	}
+
+	&__bar {
+		border-radius: 16px;
+		height: 100px;
+		border: 1px solid #9b9b9b;
+		width: 34px;
+		padding: 4px;
+		position: relative;
+	}
+
+	&__bar-ball {
+		background: #414fd1;
+		width: 24px;
+		height: 24px;
+		border-radius: 50%;
+		position: absolute;
+		transform: translateY(18px);
+	}
+}
