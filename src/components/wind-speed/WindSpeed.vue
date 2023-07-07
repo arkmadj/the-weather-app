@@ -21,8 +21,6 @@ const props = defineProps({
   degree: { type: Number, default: 1 },
 });
 
-console.log("Degree", props.degree)
-
 const windDirection = computed(() => {
   let direction = "N"
 
