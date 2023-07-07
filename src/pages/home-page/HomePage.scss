@@ -1,45 +1,125 @@
 .header {
 	display: flex;
-  align-items: center;
-  justify-content: space-between;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 30px;
 
 	&__links {
 		list-style: none;
 		display: flex;
-		gap: 12px;
+		gap: 18px;
+		position: relative;
 	}
 
 	&__link-item {
-		font-family: "Roboto" sans-serif;
+		user-select: none;
+		font-size: 20px;
+		cursor: pointer;
 	}
 
-  &__right{
-    display: flex;
-    gap: 24px;
-  }
+	&__slider {
+		position: absolute;
+		top: 28px;
+		background: #414fd1;
+		height: 4px;
+		width: 105px;
+		transition: all 0.4s ease-in;
+		transform: translateX(120px);
+	}
+
+	&__right {
+		display: none;
+	}
 
 	&__switch {
 		display: flex;
-    gap: 12px;
-    align-items: center;
+		gap: 12px;
+		align-items: center;
 	}
 
-  &__switch-item {
-    background: red;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-  }
+	&__switch-item {
+		border-radius: 50%;
+		width: 35px;
+		height: 35px;
+		display: grid;
+		place-items: center;
+		border: none;
+		cursor: pointer;
 
-  &__image {
-    background: blue;
-    border-radius: 12px;
-    width: 40px;
-    aspect-ratio: 1/1;
-  }
+		&:first-child {
+			background: #191919;
+			color: #fff;
+		}
+
+		&:nth-child(2) {
+			color: #191919;
+			background: #fff;
+		}
+	}
+
+	&__image {
+		background: #414fd1;
+		border-radius: 12px;
+		width: 40px;
+		aspect-ratio: 1/1;
+	}
 }
 
 .weather-list {
-  display: flex;
-  gap: 12px;
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+	gap: 24px;
+	margin-bottom: 70px;
+	transform: translateY(100px);
+	opacity: 0;
+	animation: fade-in 1s ease 0s 1 normal forwards;
+}
+
+.highlights {
+	transform: translateY(300px);
+	opacity: 0;
+	animation: fade-in 1s ease 0s 1 normal forwards;
+
+	&__title {
+		font-size: x-large;
+		margin-bottom: 30px;
+	}
+
+	&__list {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+		gap: 32px;
+	}
+}
+
+.home-empty {
+	display: none;
+	height: 70%;
+	width: 100%;
+}
+
+@media only screen and (min-width: 992px) {
+	.header {
+		&__right {
+			display: flex;
+			gap: 24px;
+		}
+	}
+
+	.highlights {
+		&__list {
+			grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+		}
+	}
+
+	.home-empty {
+		display: block;
+	}
+}
+
+@keyframes fade-in {
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
