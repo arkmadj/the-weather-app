@@ -1,0 +1,40 @@
+.wind-speed {
+	margin-top: 32px;
+
+	&__value-container {
+		display: flex;
+		gap: 8px;
+		align-items: flex-end;
+		margin-bottom: 32px;
+	}
+
+	&__value-text {
+		font-size: 96px;
+		font-weight: bold;
+		line-height: 120px;
+	}
+
+	&__value-unit {
+		font-size: 24px;
+		margin-bottom: 24px;
+	}
+
+	&__footer {
+		display: flex;
+		gap: 24px;
+		align-items: center;
+	}
+
+	&__icon {
+		width: 35px;
+		height: 35px;
+		border-radius: 50%;
+		border: 1px solid #9b9b9b;
+		display: grid;
+		place-items: center;
+	}
+
+	&__direction {
+		font-size: 24px;
+	}
+}
