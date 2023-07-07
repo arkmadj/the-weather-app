@@ -25,5 +25,4 @@ export default {
 	fetchCurrentWeather,
 	fetchWeatherForecast,
 	fetchWeatherHistory,
-	fetchCurrentWeatherByCoords,
 };
