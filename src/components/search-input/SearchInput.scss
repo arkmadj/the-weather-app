@@ -15,3 +15,16 @@
   background: none;
   outline: none;
 }
+
+.input-target{
+  height: 25px;
+  width: 25px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.4s ease-in-out;
+
+  &:hover{
+    background: rgb(210, 210, 210);
+
+  }
+}
