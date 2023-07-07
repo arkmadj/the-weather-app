@@ -1,0 +1,20 @@
+.highlight-card {
+	background: #fff;
+	padding: 24px;
+	border-radius: 12px;
+
+	&__title {
+		color: #9b9b9b;
+	}
+}
+
+.value-container {
+	height: 200px;
+}
+
+@media only screen and (min-width: 992px) {
+	.highlight-card {
+		padding: 32px;
+    border-radius: 24px;
+	}
+}
