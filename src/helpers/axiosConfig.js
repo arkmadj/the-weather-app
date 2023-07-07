@@ -6,4 +6,10 @@ const axiosInstance = axios.create({
 
 axiosInstance.defaults.headers.post["Content-Type"] = "application/json";
 
-export { axiosInstance };
+const axiosLocationInstance = axios.create({
+  baseURL: "https://maps.googleapis.com",
+});
+
+axiosLocationInstance.defaults.headers.post["Content-Type"] = "application/json";
+
+export { axiosInstance, axiosLocationInstance };
