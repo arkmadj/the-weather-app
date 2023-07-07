@@ -1,0 +1,32 @@
+.suntime-container{
+  gap: 24px;
+}
+
+.suntime{
+  &__details{
+    display: flex;
+    gap: 24px;
+    margin-top: 32px;
+  }
+
+  &__icon{
+    display: grid;
+    place-items: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,231,5,1) 35%, rgba(255,111,0,1) 100%);
+    color: #fff;
+    font-weight: bolder;
+  }
+
+  &__actual-time {
+    font-size: 24px;
+    font-weight: bold;
+  }
+
+  &__time-diff{
+    font-size: 14px;
+    color: #9b9b9b;
+  }
+}
