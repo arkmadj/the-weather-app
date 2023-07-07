@@ -21,16 +21,8 @@ const fetchWeatherHistory = async ({ lat, lon, date }) => {
 	return response;
 };
 
-const fetchCurrentWeatherByCoords = async (lat, lon) => {
-	const response = await axiosInstance.get(
-		`/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=f082ca3698101afdf815e0340cb1cd35&cnt=1`
-	);
-	return response;
-};
-
 export default {
 	fetchCurrentWeather,
 	fetchWeatherForecast,
 	fetchWeatherHistory,
-	fetchCurrentWeatherByCoords,
 };
