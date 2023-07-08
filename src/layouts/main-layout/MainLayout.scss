@@ -1,20 +1,22 @@
+@import "../../styles/variables";
+
 .main-container {
-	background: #f7f6f9;
-	// height: 100vh;
+	background: var(--background-2);
 	display: flex;
 	flex-direction: column;
+	transition: all 0.4s ease-in-out;
 }
 
 .side-bar {
-	background: #fff;
+	background: var(--background-1);
 	height: 100vh;
 	padding: 32px;
+	transition: all 0.4s ease-in-out;
 }
 
 .main-content {
 	padding: 32px;
 	padding-top: 60px;
-	// width: 100vh;
 	overflow-y: scroll;
 }
 
