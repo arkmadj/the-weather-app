@@ -22,22 +22,29 @@ const loadingPage = ref(false);
 
 onMounted(() => {
   if (window.navigator.geolocation) {
-    window.navigator.geolocation.getCurrentPosition(fetchUserWeather, console.log);
+    window.navigator.geolocation.getCurrentPosition(fetchUserWeather, handleError);
   } else {
     fetchUserWeather({
-      coords: { lat: 6.5243793, lon: 3.3792057 },
+      coords: { latitude: 6.5243793, longitude: 3.3792057 },
       city: "Lagos, Nigeria",
     });
   }
 });
 
-const fetchUserWeather = async(position) => {
+const fetchUserWeather = async (position) => {
   customEmit("selectedLocation", {
     lat: position.coords.latitude,
     lon: position.coords.longitude,
     city: await getCoordinatesAddress(position.coords.latitude, position.coords.longitude),
   });
 };
+
+const handleError = () => {
+  fetchUserWeather({
+    coords: { latitude: 6.5243793, longitude: 3.3792057 },
+    city: "Lagos, Nigeria",
+  });
+}
 
 const getCoordinatesAddress = async (lat, lon) => {
   const location = await api.location.fetchCurrentLocation(lat, lon)
