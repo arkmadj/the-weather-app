@@ -66,7 +66,7 @@
       </section>
     </div>
     <div v-else></div>
-    <section class="highlights" v-if="showHighlights">
+    <section :class="[{ 'highlights--show': showHighlights}, 'highlights']">
       <p class="highlights__title">Today's Highlights</p>
       <div class="highlights__list">
         <HighlightCard
