@@ -17,11 +17,11 @@
       <div class="temp-container">
         <div class="current-temp">
           <span class="current-temp__value">{{ currentWeather.temp }}</span>
-          <span class="current-temp__unit">ºC</span>
+          <span class="current-temp__unit">{{ currentUnit.unit }}</span>
         </div>
         <div class="high-low-container">
-          <span class="high-low-container__high">{{ currentWeather.highTemp }}ºC</span>
-          <span class="high-low-container__low">{{ currentWeather.lowTemp }}ºC</span>
+          <span class="high-low-container__high">{{ currentWeather.highTemp }}</span>
+          <span class="high-low-container__low">{{ currentWeather.lowTemp }}</span>
         </div>
       </div>
       <div class="date-container">
@@ -32,7 +32,7 @@
       <div class="weather-description">
         <p class="weather-description__top">{{ currentWeather.description }}</p>
         <p class="weather-description__bottom">
-          Feels like - {{ currentWeather.subText }}ºC
+          Feels like - {{ currentWeather.subText }}
         </p>
       </div>
       <div class="country-card">
@@ -63,6 +63,7 @@ import { getTime, getDay } from "@/helpers/formatTime";
 import useEventBus from "../../composables/eventBus";
 import EmptyState from "../empty-state/EmptyState.vue";
 import AppToggle from "../app-toggle/AppToggle.vue";
+import { formatTemp } from "../../helpers/formatTemp";
 
 const { bus } = useEventBus();
 
@@ -82,6 +83,8 @@ const loadingCurrentWeather = ref(false);
 
 const currentWeatherResponse = ref({});
 
+const currentUnit = ref({ name: "celsius", unit: "ºC" });
+
 const getCurrentWeather = async (val) => {
   loadingCurrentWeather.value = true;
   try {
@@ -96,13 +99,35 @@ const getCurrentWeather = async (val) => {
   loadingCurrentWeather.value = false;
 };
 
+watch(
+  () => bus.value.get("changeTempUnit"),
+  (val) => {
+    currentUnit.value = val[0];
+  }
+);
+
 const currentWeather = computed(() => {
   if (!currentWeatherResponse.value?.data) return {};
   return {
     imgType: currentWeatherResponse.value?.data?.current?.weather[0]?.icon || "",
-    temp: parseInt(currentWeatherResponse.value?.data?.current?.temp) || "",
-    highTemp: parseInt(currentWeatherResponse.value?.data?.daily[0]?.temp?.max) || "",
-    lowTemp: parseInt(currentWeatherResponse.value?.data?.daily[0]?.temp?.min) || "",
+    temp:
+      formatTemp(
+        currentWeatherResponse.value?.data?.current?.temp,
+        currentUnit.value.name,
+        false
+      ) || "",
+    highTemp:
+      formatTemp(
+        currentWeatherResponse.value?.data?.daily[0]?.temp?.max,
+        currentUnit.value.name,
+        true
+      ) || "",
+    lowTemp:
+      formatTemp(
+        currentWeatherResponse.value?.data?.daily[0]?.temp?.min,
+        currentUnit.value.name,
+        true
+      ) || "",
     // day: new Date(currentWeatherResponse.value?.data?.list[0].dt_txt) || "",
     day: getDay(currentWeatherResponse.value?.data?.current?.dt),
     time: getTime(
@@ -111,7 +136,12 @@ const currentWeather = computed(() => {
         3600
     ),
     description: currentWeatherResponse.value?.data?.current?.weather[0]?.main || "",
-    subText: parseInt(currentWeatherResponse.value?.data?.current?.feels_like) || "",
+    subText:
+      formatTemp(
+        currentWeatherResponse.value?.data?.current?.feels_like,
+        currentUnit.value.name,
+        true
+      ) || "",
   };
 });
 
