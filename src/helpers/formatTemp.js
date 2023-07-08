@@ -1,5 +1,5 @@
 export const formatTemp = (val, unit, showUnit = false) => {
-	const suffixUnit = showUnit ? (val === "celsius" ? "ºC" : "ºF") : "";
+	const suffixUnit = showUnit ? (unit === "celsius" ? "ºC" : "ºF") : "";
 	if (unit === "celsius") {
 		return parseInt(val) + suffixUnit;
 	}
