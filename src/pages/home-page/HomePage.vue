@@ -8,7 +8,7 @@
         :style="`transform: translateX(${sliderPosition}px)`"
       ></span>
     </div>
-    <div class="header__right" v-if="false">
+    <div class="header__right">
       <div class="header__switch" v-if="!isEmpty">
         <button
           class="header__switch-item"
@@ -29,7 +29,17 @@
           ºF
         </button>
       </div>
-      <div class="header__image"></div>
+      <div class="header__dark-mode" @click="toggleDarkMode" >
+        <div
+          :class="[
+            { 'dark-mode__sun-container--active': isDarkMode },
+            'dark-mode__sun-container',
+          ]"
+        >
+          <MoonIcon color="#000" size="24" />
+        </div>
+        <SunIcon color="#fff" size="24"/>
+      </div>
     </div>
   </nav>
   <div v-if="!isEmpty">
@@ -113,6 +123,8 @@ import api from "@/api";
 import { getDay, getTime } from "@/helpers/formatTime";
 import DialGauge from "../../components/dial-gauge/DialGauge.vue";
 import EmptyState from "../../components/empty-state/EmptyState.vue";
+import SunIcon from "../../components/icons/SunIcon.vue";
+import MoonIcon from "../../components/icons/MoonIcon.vue";
 
 const { bus, emit } = useEventBus();
 
@@ -132,7 +144,7 @@ const dataIsForecast = ref(true);
 
 const showHighlights = ref(false);
 
-const activeTempUnit = ref("celsius");
+const isDarkMode = ref(false);
 
 watch(
   () => bus.value.get("selectedLocation"),
@@ -302,6 +314,24 @@ const isEmpty = computed(() => {
     days.value.length === 0
   );
 });
+
+const toggleDarkMode = () => {
+  isDarkMode.value = !isDarkMode.value;
+  const body = document.body
+  !body.classList.contains("dark-mode") ? addDarkMode() : addLightMode();
+};
+
+const addDarkMode = () => {
+  const body = document.body
+  body.classList.remove("light-mode")
+  body.classList.add("dark-mode")
+}
+
+const addLightMode = () => {
+  const body = document.body
+  body.classList.remove("dark-mode")
+  body.classList.add("light-mode")
+}
 </script>
 <style lang="scss" scoped>
 @import "./HomePage.scss";
