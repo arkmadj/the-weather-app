@@ -305,6 +305,13 @@ const highlights = computed(() => {
   ];
 });
 
+watch(
+  () => bus.value.get("changeTempUnit"),
+  (val) => {
+    activeTempUnit.value = val[0];
+  }
+);
+
 const changeTempUnit = (val, unit) => {
   emit("changeTempUnit", {
     name: val,
