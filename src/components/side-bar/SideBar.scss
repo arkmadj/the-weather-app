@@ -3,6 +3,23 @@
 	flex-direction: column;
 	justify-content: space-between;
 	height: 100%;
+	position: relative;
+
+	&__header {
+		display: flex;
+		gap: 12px;
+		justify-content: space-between;
+	}
+
+	&__input-container {
+		width: calc(100% - 60px);
+	}
+
+	&__menu-container {
+		position: absolute;
+		top: 0;
+		right: 0;
+	}
 
 	&__main-container {
 		display: flex;
@@ -26,7 +43,7 @@
 		flex-grow: 1;
 	}
 
-	&__toggle-container{
+	&__toggle-container {
 		display: flex;
 		align-items: center;
 		justify-content: flex-end;
@@ -129,6 +146,14 @@
 
 @media only screen and (min-width: 992px) {
 	.sidebar {
+		&__input-container {
+			width: 100%;
+		}
+
+		&__menu-container{
+			display: none;
+		}
+
 		&__empty-state {
 			display: none;
 			place-items: center;
@@ -138,8 +163,8 @@
 }
 
 @keyframes fade-in {
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+	100% {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }

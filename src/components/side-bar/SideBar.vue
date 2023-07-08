@@ -1,7 +1,8 @@
 <template>
   <div class="sidebar">
-    <div>
-      <SearchInput />
+    <div class="sidebar__header">
+      <SearchInput class="sidebar__input-container"/>
+      <AppMenu class="sidebar__menu-container"/>
     </div>
 
     <div class="sidebar__main-container" v-if="!loadingCurrentWeather && !isEmpty">
@@ -64,6 +65,7 @@ import useEventBus from "../../composables/eventBus";
 import EmptyState from "../empty-state/EmptyState.vue";
 import AppToggle from "../app-toggle/AppToggle.vue";
 import { formatTemp } from "../../helpers/formatTemp";
+import AppMenu from "../app-menu/AppMenu.vue";
 
 const { bus } = useEventBus();
 
