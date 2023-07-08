@@ -3,7 +3,7 @@ export const getTime = (val) => {
 	let hours = date.getHours();
 	const minutes = "0" + date.getMinutes();
 
-	const timeSuffix = hours > 12 ? "PM" : "AM";
+	const timeSuffix = hours > 0 && hours > 11 ? "PM" : "AM";
 
 	hours = hours % 12;
 
