@@ -97,7 +97,7 @@
 .highlights {
 	transform: translateY(300px);
 	opacity: 0;
-	transition: all 0.8s ease-in-out;
+	animation: fade-in 1s ease 0s 1 normal forwards;
 
 	&__title {
 		font-size: x-large;
@@ -108,11 +108,6 @@
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 		gap: 32px;
-	}
-
-	&--show{
-		opacity: 1;
-		transform: translateY(0);
 	}
 }
 
