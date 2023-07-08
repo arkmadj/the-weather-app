@@ -46,6 +46,13 @@
 		border: none;
 		cursor: pointer;
 		transition: background 0.4s ease-in-out;
+		background: var(--background-1);
+		color: var(--color-1);
+
+		&--active{
+			background: var(--color-1);
+			color: var(--background-1);
+		}
 	}
 
 	&__dark-mode {
