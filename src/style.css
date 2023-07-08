@@ -1,28 +1,56 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito&family=Roboto&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Nunito&family=Roboto&display=swap");
 
-
-*, *::before, *::after {
-  box-sizing: border-box;
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
 }
 
 * {
-  margin: 0;
+	margin: 0;
 }
 body {
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  font-family: 'Nunito', sans-serif;
+	line-height: 1.5;
+	-webkit-font-smoothing: antialiased;
+	font-family: "Nunito", sans-serif;
+	color: var(--color-1);
 }
-img, picture, video, canvas, svg {
-  display: block;
-  max-width: 100%;
+img,
+picture,
+video,
+canvas,
+svg {
+	display: block;
+	max-width: 100%;
 }
-input, button, textarea, select {
-  font: inherit;
+input,
+button,
+textarea,
+select {
+	font: inherit;
 }
-p, h1, h2, h3, h4, h5, h6 {
-  overflow-wrap: break-word;
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	overflow-wrap: break-word;
 }
-#root, #__next {
-  isolation: isolate;
+#root,
+#__next {
+	isolation: isolate;
+}
+
+:root {
+	--background-1: #fff;
+	--background-2: #f7f6f9;
+	--color-1: #000;
+}
+
+.dark-mode {
+	--background-1: #000000;
+	--background-2: #00123d;
+	--color-1: #fff;
 }
