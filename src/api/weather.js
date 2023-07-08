@@ -22,7 +22,7 @@ const fetchWeatherHistory = async ({ lat, lon, date }) => {
 	const response = await axiosInstance.get(
 		`/data/2.5/onecall/timemachine?lat=${lat}&lon=${lon}&dt=${date}&appid=${
 			import.meta.env.VITE_OPEN_WEATHER_API_KEY
-		}&only_current={true}`
+		}&only_current={true}&units=metric`
 	);
 	return response;
 };
