@@ -11,25 +11,25 @@
     <div class="header__right">
       <div class="header__switch" v-if="!isEmpty">
         <button
-          class="header__switch-item"
-          :style="`background: ${
-            activeTempUnit === 'celsius' ? '#191919' : '#fff'
-          }; color: ${activeTempUnit === 'celsius' ? '#fff' : '#191919'}`"
-          @click="changeTempUnit('celsius')"
+          :class="[
+            { 'header__switch-item--active': activeTempUnit.name === 'celsius' },
+            'header__switch-item',
+          ]"
+          @click="changeTempUnit('celsius', 'ºC')"
         >
           ºC
         </button>
         <button
-          class="header__switch-item"
-          :style="`background: ${
-            activeTempUnit === 'fahrenheit' ? '#191919' : '#fff'
-          }; color: ${activeTempUnit === 'fahrenheit' ? '#fff' : '#191919'}`"
-          @click="changeTempUnit('fahrenheit')"
+          :class="[
+            { 'header__switch-item--active': activeTempUnit.name === 'fahrenheit' },
+            'header__switch-item',
+          ]"
+          @click="changeTempUnit('fahrenheit', 'ºF')"
         >
           ºF
         </button>
       </div>
-      <div class="header__dark-mode" @click="toggleDarkMode" >
+      <div class="header__dark-mode" @click="toggleDarkMode">
         <div
           :class="[
             { 'dark-mode__sun-container--active': isDarkMode },
@@ -38,7 +38,7 @@
         >
           <MoonIcon color="#000" size="24" />
         </div>
-        <SunIcon color="#fff" size="24"/>
+        <SunIcon color="#fff" size="24" />
       </div>
     </div>
   </nav>
@@ -50,8 +50,8 @@
           :key="index"
           :day="day.day"
           :type="day.type"
-          :high-temp="day.highTemp"
-          :low-temp="day.lowTemp"
+          :high-temp="formatTemp(day.highTemp, activeTempUnit.name, true)"
+          :low-temp="formatTemp(day.lowTemp, activeTempUnit.name, true)"
         />
       </section>
       <section class="weather-list" v-else>
@@ -125,6 +125,7 @@ import DialGauge from "../../components/dial-gauge/DialGauge.vue";
 import EmptyState from "../../components/empty-state/EmptyState.vue";
 import SunIcon from "../../components/icons/SunIcon.vue";
 import MoonIcon from "../../components/icons/MoonIcon.vue";
+import { formatTemp } from "../../helpers/formatTemp";
 
 const { bus, emit } = useEventBus();
 
@@ -145,6 +146,8 @@ const dataIsForecast = ref(true);
 const showHighlights = ref(false);
 
 const isDarkMode = ref(false);
+
+const activeTempUnit = ref({ name: "celsius", unit: "ºC" });
 
 watch(
   () => bus.value.get("selectedLocation"),
@@ -226,7 +229,8 @@ const days = computed(() => {
   return weatherForcastResponse.value.data?.daily?.map((item) => ({
     day: getDay(item?.dt, true) || "",
     type: item.weather[0].icon,
-    temp: parseInt(item.temp),
+    highTemp: item.temp.max,
+    lowTemp: item.temp.min,
   }));
 });
 
@@ -235,8 +239,7 @@ const history = computed(() => {
   return weatherHistoryData.value.map((item) => ({
     day: getDay(item?.dt, true) || "",
     type: item.weather[0].icon,
-    highTemp: parseInt(item.temp.max),
-    lowTemp: parseInt(item.temp.min),
+    temp: formatTemp(item.temp, activeTempUnit.value.name, true),
   }));
 });
 
@@ -302,9 +305,12 @@ const highlights = computed(() => {
   ];
 });
 
-const changeTempUnit = (val) => {
-  emit("changeTempUnit", val);
-  activeTempUnit.value = val;
+const changeTempUnit = (val, unit) => {
+  emit("changeTempUnit", {
+    name: val,
+    unit,
+  });
+  activeTempUnit.value.name = val;
 };
 
 const isEmpty = computed(() => {
@@ -317,21 +323,21 @@ const isEmpty = computed(() => {
 
 const toggleDarkMode = () => {
   isDarkMode.value = !isDarkMode.value;
-  const body = document.body
+  const body = document.body;
   !body.classList.contains("dark-mode") ? addDarkMode() : addLightMode();
 };
 
 const addDarkMode = () => {
-  const body = document.body
-  body.classList.remove("light-mode")
-  body.classList.add("dark-mode")
-}
+  const body = document.body;
+  body.classList.remove("light-mode");
+  body.classList.add("dark-mode");
+};
 
 const addLightMode = () => {
-  const body = document.body
-  body.classList.remove("dark-mode")
-  body.classList.add("light-mode")
-}
+  const body = document.body;
+  body.classList.remove("dark-mode");
+  body.classList.add("light-mode");
+};
 </script>
 <style lang="scss" scoped>
 @import "./HomePage.scss";
