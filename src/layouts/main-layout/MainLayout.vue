@@ -11,16 +11,15 @@
 </template>
 <script setup>
 import SideBar from "@/components/side-bar/SideBar.vue";
-import { onMounted, ref } from "vue";
-import useEventBus from "../../composables/eventBus";
+import { computed, onMounted } from "vue";
 import PageLoader from "../../pages/page-loader/PageLoader.vue";
-import api from "@/api"
+import { useStore } from "vuex";
 
-const { emit: customEmit } = useEventBus();
-
-const loadingPage = ref(false);
+const store = useStore();
 
 onMounted(() => {
+  store.commit("app/setLoading", true);
+
   if (window.navigator.geolocation) {
     window.navigator.geolocation.getCurrentPosition(fetchUserWeather, handleError);
   } else {
@@ -31,12 +30,53 @@ onMounted(() => {
   }
 });
 
+const loadingPage = computed(() => store.state.app.loading);
+
 const fetchUserWeather = async (position) => {
-  customEmit("selectedLocation", {
+  await store.dispatch("location/fetchCurrentLocation", {
     lat: position.coords.latitude,
     lon: position.coords.longitude,
-    city: await getCoordinatesAddress(position.coords.latitude, position.coords.longitude),
   });
+
+  await store.dispatch("weather/fetchCurrentWeather", {
+    lat: position.coords.latitude,
+    lon: position.coords.longitude,
+  });
+
+  await store.dispatch("weather/fetchWeatherForecast", {
+    lat: position.coords.latitude,
+    lon: position.coords.longitude,
+  });
+
+  await store.dispatch("weather/fetchWeatherHistory", {
+    lat: position.coords.latitude,
+    lon: position.coords.longitude,
+  });
+
+  await getWeatherHistory({
+    lat: position.coords.latitude,
+    lon: position.coords.longitude,
+  });
+
+  store.commit("app/setLoading", false);
+};
+
+const getWeatherHistory = async (val) => {
+  store.commit("app/setLoadingForecast", true);
+  try {
+    const currentUTCDate = Math.floor(Date.now() / 1000);
+
+    for (let i = 1; i <= 5; i++) {
+      await store.dispatch("weather/fetchWeatherHistory", {
+        lat: val.lat,
+        lon: val.lon,
+        date: currentUTCDate - 86400 * i,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+  store.commit("app/setLoadingForecast", true);
 };
 
 const handleError = () => {
@@ -44,12 +84,7 @@ const handleError = () => {
     coords: { latitude: 6.5243793, longitude: 3.3792057 },
     city: "Lagos, Nigeria",
   });
-}
-
-const getCoordinatesAddress = async (lat, lon) => {
-  const location = await api.location.fetchCurrentLocation(lat, lon)
-  return location.data.results[0].formatted_address || ""
-}
+};
 </script>
 <style lang="scss" scoped>
 @import "./MainLayout.scss";
