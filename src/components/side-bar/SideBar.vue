@@ -1,8 +1,11 @@
 <template>
   <div class="sidebar">
     <div class="sidebar__header">
-      <SearchInput class="sidebar__input-container"/>
-      <AppMenu class="sidebar__menu-container"/>
+      <SearchInput
+        class="sidebar__input-container"
+        @selected-location="fetchUserWeather"
+      />
+      <AppMenu class="sidebar__menu-container" />
     </div>
 
     <div class="sidebar__main-container" v-if="!loadingCurrentWeather && !isEmpty">
@@ -13,7 +16,7 @@
       />
       <div class="sidebar__toggle-container">
         <span class="sidebar__toggle-text">Show More Info</span>
-        <AppToggle />
+        <AppToggle v-model:checked="showMoreInfo" @update:checked="toggleShowMoreInfo" />
       </div>
       <div class="temp-container">
         <div class="current-temp">
@@ -57,95 +60,97 @@
 </template>
 <script setup>
 import SearchInput from "../search-input/SearchInput.vue";
-import api from "@/api";
-import { ref, computed, watch } from "vue";
+import { ref, computed } from "vue";
 import AppLoader from "../app-loader/AppLoader.vue";
 import { getTime, getDay } from "@/helpers/formatTime";
-import useEventBus from "../../composables/eventBus";
 import EmptyState from "../empty-state/EmptyState.vue";
 import AppToggle from "../app-toggle/AppToggle.vue";
 import { formatTemp } from "../../helpers/formatTemp";
 import AppMenu from "../app-menu/AppMenu.vue";
+import { useStore } from "vuex";
 
-const { bus } = useEventBus();
 
-watch(
-  () => bus.value.get("selectedLocation"),
-  (val) => {
-    getCurrentWeather(val[0]);
-  }
-);
+const store = useStore();
 
-const currentLocation = ref({
-  city: "",
-  lon: "",
-  lat: "",
-});
 const loadingCurrentWeather = ref(false);
 
-const currentWeatherResponse = ref({});
+const currentUnit = computed(() => store.state.app.unit);
 
-const currentUnit = ref({ name: "celsius", unit: "ºC" });
+const showMoreInfo = ref(false);
 
-const getCurrentWeather = async (val) => {
-  loadingCurrentWeather.value = true;
+const toggleShowMoreInfo = async () => {
+  store.commit("app/toggleShowHighlights");
+}
+
+const fetchUserWeather = async (position) => {
+  await store.dispatch("location/fetchCurrentLocation", {
+    lat: position.lat,
+    lon: position.lon,
+  });
+
+  await store.dispatch("weather/fetchCurrentWeather", {
+    lat: position.lat,
+    lon: position.lon,
+  });
+
+  await store.dispatch("weather/fetchWeatherForecast", {
+    lat: position.lat,
+    lon: position.lon,
+  });
+
+  await store.dispatch("weather/fetchWeatherHistory", {
+    lat: position.lat,
+    lon: position.lon,
+  });
+
+  await getWeatherHistory({
+    lat: position.lat,
+    lon: position.lon,
+  });
+
+  store.commit("app/setLoading", false);
+};
+
+const getWeatherHistory = async (val) => {
+  store.commit("app/setLoadingForecast", true);
   try {
-    currentWeatherResponse.value = await api.weather.fetchCurrentWeather({
-      lat: val.lat,
-      lon: val.lon,
-    });
-    currentLocation.value = val;
+    const currentUTCDate = Math.floor(Date.now() / 1000);
+
+    for (let i = 1; i <= 5; i++) {
+      await store.dispatch("weather/fetchWeatherHistory", {
+        lat: val.lat,
+        lon: val.lon,
+        date: currentUTCDate - 86400 * i,
+      });
+    }
   } catch (error) {
     console.log(error);
   }
-  loadingCurrentWeather.value = false;
+  store.commit("app/setLoadingForecast", true);
 };
 
-watch(
-  () => bus.value.get("changeTempUnit"),
-  (val) => {
-    currentUnit.value = val[0];
-  }
-);
-
 const currentWeather = computed(() => {
-  if (!currentWeatherResponse.value?.data) return {};
+  const weatherData = store.state.weather.current;
+  if (Object.keys(weatherData).length < 1) return weatherData;
   return {
-    imgType: currentWeatherResponse.value?.data?.current?.weather[0]?.icon || "",
-    temp:
-      formatTemp(
-        currentWeatherResponse.value?.data?.current?.temp,
-        currentUnit.value.name,
-        false
-      ) || "",
+    imgType: weatherData?.current?.weather[0]?.icon || "",
+    temp: formatTemp(weatherData?.current?.temp, currentUnit.value.name, false) || "",
     highTemp:
-      formatTemp(
-        currentWeatherResponse.value?.data?.daily[0]?.temp?.max,
-        currentUnit.value.name,
-        true
-      ) || "",
+      formatTemp(weatherData?.daily[0]?.temp?.max, currentUnit.value.name, true) || "",
     lowTemp:
-      formatTemp(
-        currentWeatherResponse.value?.data?.daily[0]?.temp?.min,
-        currentUnit.value.name,
-        true
-      ) || "",
-    // day: new Date(currentWeatherResponse.value?.data?.list[0].dt_txt) || "",
-    day: getDay(currentWeatherResponse.value?.data?.current?.dt),
+      formatTemp(weatherData?.daily[0]?.temp?.min, currentUnit.value.name, true) || "",
+    // day: new Date(weatherData?.list[0].dt_txt) || "",
+    day: getDay(weatherData?.current?.dt),
     time: getTime(
-      Number(currentWeatherResponse.value?.data?.current?.dt) +
-        Number(currentWeatherResponse.value?.data?.timezone_offset) -
-        3600
+      Number(weatherData?.current?.dt) + Number(weatherData?.timezone_offset) - 3600
     ),
-    description: currentWeatherResponse.value?.data?.current?.weather[0]?.main || "",
+    description: weatherData?.current?.weather[0]?.main || "",
     subText:
-      formatTemp(
-        currentWeatherResponse.value?.data?.current?.feels_like,
-        currentUnit.value.name,
-        true
-      ) || "",
+      formatTemp(weatherData?.current?.feels_like, currentUnit.value.name, true) || "",
   };
 });
+
+const currentLocation = computed(() => store.state.location.current);
 
 const isEmpty = computed(() => {
   return Object.keys(currentWeather.value).length === 0;
