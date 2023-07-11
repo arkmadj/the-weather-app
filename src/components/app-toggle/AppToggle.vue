@@ -1,16 +1,18 @@
 <template>
-  <input type="checkbox" v-model="checkbox" @change="handleCheck" />
+  <input
+    v-bind="$attrs"
+    type="checkbox"
+    :checked="checked"
+    @change="$emit('update:checked', $event.target.checked)"
+  />
 </template>
 <script setup>
-import { ref } from "vue";
-import useEventBus from "../../composables/eventBus";
-
-const { emit } = useEventBus();
-const checkbox = ref(false);
-
-const handleCheck = () => {
-  emit("showHighlights", checkbox.value);
-};
+const props = defineProps({
+  checked: { type: Boolean, required: true },
+});
+defineOptions({
+  inheritAttrs: false,
+});
 </script>
 <style lang="scss" scoped>
 @import "./AppToggle.scss";
