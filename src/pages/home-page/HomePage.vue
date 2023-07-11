@@ -43,7 +43,7 @@
     </div>
   </nav>
   <div v-if="!isEmpty">
-    <div v-if="!loadingWeatherForecast">
+    <div v-if="!isLoadingForecast">
       <section class="weather-list" v-if="dataIsForecast">
         <WeatherCard
           v-for="(day, index) in days"
@@ -112,121 +112,48 @@
   </div>
 </template>
 <script setup>
-import { ref, watch, computed } from "vue";
+import { ref, computed } from "vue";
 import WeatherCard from "../../components/weather-card/WeatherCard.vue";
 import HighlightCard from "../../components/highlight-card/HighlightCard.vue";
 import SunTime from "../../components/sun-time/SunTime.vue";
 import WindSpeed from "../../components/wind-speed/WindSpeed.vue";
 import Gauge from "../../components/gauge/Gauge.vue";
-import useEventBus from "../../composables/eventBus";
-import api from "@/api";
 import { getDay, getTime } from "@/helpers/formatTime";
 import DialGauge from "../../components/dial-gauge/DialGauge.vue";
 import EmptyState from "../../components/empty-state/EmptyState.vue";
 import SunIcon from "../../components/icons/SunIcon.vue";
 import MoonIcon from "../../components/icons/MoonIcon.vue";
 import { formatTemp } from "../../helpers/formatTemp";
+import { useStore } from "vuex";
 
-const { bus, emit } = useEventBus();
-
-const loadingWeatherForecast = ref(false);
-const weatherForcastResponse = ref();
-
-const loadingWeatherHistory = ref(false);
-
-const loadingCurrentWeather = ref(false);
-const currentWeatherResponse = ref();
+const store = useStore();
 
 const sliderPosition = ref(120);
 
-const weatherHistoryData = ref([]);
-
-const dataIsForecast = ref(true);
-
-const showHighlights = ref(false);
+const showHighlights = computed(() => store.state.app.showHighlights);
 
 const isDarkMode = ref(false);
 
-const activeTempUnit = ref({ name: "celsius", unit: "ºC" });
+const activeTempUnit = computed(() => store.state.app.unit);
 
-watch(
-  () => bus.value.get("selectedLocation"),
-  (val) => {
-    getWeatherForecast(val[0]);
-    getCurrentWeather(val[0]);
-    getWeatherHistory(val[0]);
-    showForecast();
-    showHighlights.value = false;
-  }
-);
+const isLoadingForecast = computed(() => store.state.app.loadingForecast);
 
-watch(
-  () => bus.value.get("showHighlights"),
-  (val) => {
-    showHighlights.value = val[0];
-  }
-);
+const dataIsForecast = computed(() => store.state.app.showForecast);
 
-const getWeatherForecast = async (val) => {
-  loadingWeatherForecast.value = true;
-  try {
-    weatherForcastResponse.value = await api.weather.fetchWeatherForecast({
-      lat: val.lat,
-      lon: val.lon,
-    });
-  } catch (error) {
-    console.log(error);
-  }
-  loadingWeatherForecast.value = false;
-};
-
-const getWeatherHistory = async (val) => {
-  loadingWeatherHistory.value = true;
-  weatherHistoryData.value = [];
-  try {
-    const currentUTCDate = Math.floor(Date.now() / 1000);
-
-    for (let i = 1; i <= 5; i++) {
-      const response = await api.weather.fetchWeatherHistory({
-        lat: val.lat,
-        lon: val.lon,
-        date: currentUTCDate - 86400 * i,
-      });
-      weatherHistoryData.value.push(response.data.current);
-    }
-  } catch (error) {
-    console.log(error);
-  }
-  loadingWeatherHistory.value = false;
-};
-
-const showHistory = async () => {
-  dataIsForecast.value = false;
+const showHistory = () => {
+  store.commit("app/toggleShowForecast", false);
   sliderPosition.value = 0;
 };
 
 const showForecast = () => {
-  dataIsForecast.value = true;
+  store.commit("app/toggleShowForecast", true);
   sliderPosition.value = 120;
 };
 
-const getCurrentWeather = async (val) => {
-  loadingCurrentWeather.value = true;
-  try {
-    currentWeatherResponse.value = await api.weather.fetchCurrentWeather({
-      lat: val.lat,
-      lon: val.lon,
-    });
-  } catch (error) {
-    console.log(error);
-  }
-  loadingCurrentWeather.value = false;
-};
-
 const days = computed(() => {
-  if (!weatherForcastResponse.value?.data) return [];
-  weatherForcastResponse.value?.data?.daily.shift();
-  return weatherForcastResponse.value.data?.daily?.map((item) => ({
+  const forecastData = store.state.weather.forecast;
+  if (forecastData.length < 1) return forecastData;
+  return forecastData?.map((item) => ({
     day: getDay(item?.dt, true) || "",
     type: item.weather[0].icon,
     highTemp: item.temp.max,
@@ -235,8 +162,9 @@ const days = computed(() => {
 });
 
 const history = computed(() => {
-  if (weatherHistoryData.value.length < 1) return [];
-  return weatherHistoryData.value.map((item) => ({
+  const historyData = store.state.weather.history;
+  if (historyData.length < 1) return historyData;
+  return historyData.map((item) => ({
     day: getDay(item?.dt, true) || "",
     type: item.weather[0].icon,
     temp: formatTemp(item.temp, activeTempUnit.value.name, true),
@@ -244,18 +172,19 @@ const history = computed(() => {
 });
 
 const highlights = computed(() => {
-  if (!currentWeatherResponse.value?.data) return {};
+  const weatherData = store.state.weather.current;
+  if (Object.keys(weatherData) < 1) return weatherData;
   return [
     {
       title: "UV Index",
-      value: parseInt(currentWeatherResponse.value?.data?.current?.uvi) || 0,
+      value: parseInt(weatherData?.current?.uvi) || 0,
       body: DialGauge,
     },
     {
       title: "Wind Status",
       type: "wind",
-      speed: currentWeatherResponse.value?.data?.current?.wind_speed || 0,
-      degree: currentWeatherResponse.value?.data?.current?.wind_deg || 0,
+      speed: weatherData?.current?.wind_speed || 0,
+      degree: weatherData?.current?.wind_deg || 0,
       body: WindSpeed,
     },
     {
@@ -263,14 +192,14 @@ const highlights = computed(() => {
       type: "sun",
       sunriseTime:
         getTime(
-          Number(currentWeatherResponse.value?.data?.current?.sunrise) -
-            Number(currentWeatherResponse.value?.data?.timezone_offset) -
+          Number(weatherData?.current?.sunrise) -
+            Number(weatherData?.timezone_offset) -
             3600
         ) || "",
       sunsetTime:
         getTime(
-          Number(currentWeatherResponse.value?.data?.current?.sunset) -
-            Number(currentWeatherResponse.value?.data?.timezone_offset) -
+          Number(weatherData?.current?.sunset) -
+            Number(weatherData?.timezone_offset) -
             3600
         ) || "",
       body: SunTime,
@@ -281,7 +210,7 @@ const highlights = computed(() => {
       showBar: true,
       unit: "%",
       superUnit: true,
-      value: currentWeatherResponse.value?.data?.current?.humidity || 0,
+      value: weatherData?.current?.humidity || 0,
       body: Gauge,
     },
     {
@@ -290,7 +219,7 @@ const highlights = computed(() => {
       showBar: false,
       unit: "km",
       superUnit: false,
-      value: Number(currentWeatherResponse.value?.data?.current?.visibility) / 1000 || 0,
+      value: Number(weatherData?.current?.visibility) / 1000 || 0,
       body: Gauge,
     },
     {
@@ -299,25 +228,14 @@ const highlights = computed(() => {
       showBar: false,
       unit: "hPa",
       superUnit: false,
-      value: parseInt(currentWeatherResponse.value?.data?.current?.pressure) || 0,
+      value: parseInt(weatherData?.current?.pressure) || 0,
       body: Gauge,
     },
   ];
 });
 
-watch(
-  () => bus.value.get("changeTempUnit"),
-  (val) => {
-    activeTempUnit.value = val[0];
-  }
-);
-
 const changeTempUnit = (val, unit) => {
-  emit("changeTempUnit", {
-    name: val,
-    unit,
-  });
-  activeTempUnit.value.name = val;
+  store.commit("app/setCurrentUnit", { name: val, unit });
 };
 
 const isEmpty = computed(() => {
