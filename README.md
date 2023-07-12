@@ -14,7 +14,7 @@ yarn dev
 ```bash
 yarn run test 
 
-yarn run coverage // for test coverage overview
+yarn run coverage 
 ```
 
 # Vue 3 + Vite
