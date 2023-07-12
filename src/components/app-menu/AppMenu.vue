@@ -1,6 +1,6 @@
 <template>
   <div class="flex-container">
-    <div :class="[{ opened: isOpen }, 'fab']" @click="toggleClick">
+    <div :class="[{ opened: isOpen }, 'fab']" @click="toggleClick" data-test="menu-icon">
       <svg viewBox="0 0 100 100" class="hamburger">
         <path
           class="line1 line"
@@ -14,8 +14,8 @@
       </svg>
     </div>
 
-    <div :class="[{ opened: isOpen }, 'menu']">
-      <ToggleContainer orientation="vertivcal"/>
+    <div :class="[{ opened: isOpen }, 'menu']" data-test="menu-container">
+      <ToggleContainer orientation="vertical"/>
     </div>
   </div>
 </template>
