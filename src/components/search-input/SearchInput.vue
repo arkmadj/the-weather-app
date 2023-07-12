@@ -1,18 +1,20 @@
 <template>
   <div class="select-container">
-    <div class="input-container">
-      <component :is="SearchIcon" color="#929292" />
+    <div class="input-container" >
+      <component :is="SearchIcon" color="#929292" data-test="search-icon"/>
       <input
         type="text"
         placeholder="Search for places"
         class="main-input"
         ref="city"
+        data-test="search-input"
       />
       <component
         :is="TargetIcon"
         color="#929292"
         @click="getLocation"
         class="input-target"
+        data-test="target-icon"
       />
     </div>
   </div>
