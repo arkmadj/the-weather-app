@@ -1,17 +1,15 @@
 <template>
   <div class="suntime-container">
     <div class="suntime__details">
-      <div class="suntime__icon">I</div>
+      <div class="suntime__icon" data-test="sunrise-icon">↑</div>
       <div class="suntime__time-container">
-        <p class="suntime__actual-time">{{ sunriseTime }}</p>
-        <p class="suntime__time-diff">- 1m 46s</p>
+        <p class="suntime__actual-time" data-test="sunrise-time">{{ sunriseTime }}</p>
       </div>
     </div>
     <div class="suntime__details">
-      <div class="suntime__icon">I</div>
+      <div class="suntime__icon" data-test="sunset-icon">↓</div>
       <div class="suntime__time-container">
-        <p class="suntime__actual-time">{{ sunsetTime }}</p>
-        <p class="suntime__time-diff">- 1m 46s</p>
+        <p class="suntime__actual-time" data-test="sunset-time">{{ sunsetTime }}</p>
       </div>
     </div>
   </div>
