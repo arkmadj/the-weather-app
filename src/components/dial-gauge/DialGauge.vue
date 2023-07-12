@@ -1,7 +1,7 @@
 <template>
   <div class="dial-container">
     <div class="semi-circle__container"></div>
-    <div class="semi-circle__container scale">
+    <div class="semi-circle__container scale" data-test="dial-scale">
       <div class="scale__top">
         <span>6</span>
       </div>
@@ -14,21 +14,25 @@
         <span>12</span>
       </div>
     </div>
-    <div class="semi-circle__container">
+    <div class="semi-circle__container" data-test="dial-track">
       <div class="track__top"></div>
       <div class="track__bottom"></div>
     </div>
-    <div class="semi-circle__container">
+    <div class="semi-circle__container" data-test="dial-top">
       <div
         class="dial__top"
         :style="`transform: rotate(${rotation}deg); background: ${dialColor}`"
       ></div>
-      <div class="dial__bottom">{{ value }}</div>
+      <div class="dial__bottom" data-test="dial-value">{{ value }}</div>
     </div>
   </div>
 </template>
 <script setup>
 import { computed } from "vue";
+defineOptions({
+  inheritAttrs: false,
+  name: "DialGaugee"
+});
 
 const props = defineProps({
   value: { type: Number, default: 5 },
