@@ -17,6 +17,7 @@
           'header__switch-item',
         ]"
         @click="changeTempUnit('celsius', 'ºC')"
+        data-test="celsius-button"
       >
         ºC
       </button>
@@ -26,28 +27,31 @@
           'header__switch-item',
         ]"
         @click="changeTempUnit('fahrenheit', 'ºF')"
+        data-test="fahrenheit-button"
       >
         ºF
       </button>
     </div>
-    <div class="header__dark-mode" @click="toggleDarkMode">
+    <div class="header__dark-mode" @click="toggleDarkMode" data-test="dark-mode-button">
       <div
         :class="[
           { 'dark-mode__sun-container--active': isDarkMode },
           'dark-mode__sun-container',
         ]"
       >
-        <MoonIcon color="#000" size="24" />
+        <MoonIcon color="#000" size="24" data-test="moon-icon"/>
       </div>
-      <SunIcon color="#fff" size="24" />
+      <SunIcon color="#fff" size="24" data-test="sun-icon"/>
     </div>
   </div>
 </template>
 <script setup>
 import { ref } from "vue";
-import useEventBus from "../../composables/eventBus";
 import MoonIcon from "../icons/MoonIcon.vue";
 import SunIcon from "../icons/SunIcon.vue";
+import { useStore } from "vuex";
+
+const store = useStore()
 
 const props = defineProps({
   orientation: {
@@ -60,15 +64,9 @@ const activeTempUnit = ref({ name: "celsius", unit: "ºC" });
 
 const isDarkMode = ref(false);
 
-const { emit } = useEventBus();
-
 const changeTempUnit = (val, unit) => {
-  emit("changeTempUnit", {
-    name: val,
-    unit,
-  });
-  activeTempUnit.value.name = val;
-};
+  store.commit("app/setCurrentUnit", { name: val, unit });
+}
 
 const toggleDarkMode = () => {
   isDarkMode.value = !isDarkMode.value;
