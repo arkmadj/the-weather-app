@@ -18,7 +18,7 @@ const mutations = {
 		state.loading = data;
 	},
   setLoadingForecast(state, data){
-    state.loading = data
+    state.loadingForecast = data
   },
 	setCurrentUnit(state, data) {
 		state.unit = data;
