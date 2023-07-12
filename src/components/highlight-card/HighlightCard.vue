@@ -1,6 +1,6 @@
 <template>
   <div class="highlight-card">
-    <span class="highlight-card__title">{{ title }}</span>
+    <span class="highlight-card__title" data-test="title">{{ title }}</span>
     
     <div class="value-container">
       <slot name="value-body"></slot>
