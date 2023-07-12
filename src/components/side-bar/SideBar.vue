@@ -112,7 +112,6 @@ const fetchUserWeather = async (position) => {
 };
 
 const getWeatherHistory = async (val) => {
-  store.commit("app/setLoadingForecast", true);
   try {
     const currentUTCDate = Math.floor(Date.now() / 1000);
 
@@ -126,7 +125,6 @@ const getWeatherHistory = async (val) => {
   } catch (error) {
     console.log(error);
   }
-  store.commit("app/setLoadingForecast", true);
 };
 
 const currentWeather = computed(() => {
