@@ -4,6 +4,7 @@
     type="checkbox"
     :checked="checked"
     @change="$emit('update:checked', $event.target.checked)"
+    data-test="check-box"
   />
 </template>
 <script setup>
